@@ -4,10 +4,8 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class Board {
@@ -54,13 +52,16 @@ public class Board {
         AnchorPane.setRightAnchor(grid, 0.0);
     }
 
-    // TODO: 01.03.2020 refactor
     public void fillGridWithRandomStates(int percentage) {
         boolean[][] cells = new boolean[rows][cols];
         int allCells = rows * cols;
-        Random randGenerator = new Random();
         int cellsToFill = allCells * percentage / 100;
+        getCellsFilledWithoutRepeating(cells, allCells, cellsToFill);
+        updateGrid(cells);
+    }
 
+    private void getCellsFilledWithoutRepeating(boolean[][] cells, int allCells, int cellsToFill) {
+        Random randGenerator = new Random();
         List<Integer> cellsNumbers = new LinkedList<>();
         for (int i = 0; i < allCells; i++) {
             cellsNumbers.add(i);
@@ -72,7 +73,6 @@ public class Board {
             cellsNumbers.remove(numberIndex);
             fillCellFromSingleNumber(cells, cellNumber);
         }
-        updateGrid(cells);
     }
 
     private void fillCellFromSingleNumber(boolean[][] cells, int cellNumber) {
@@ -83,13 +83,13 @@ public class Board {
 
     public void updateGrid(boolean[][] cells) {
         cellsStates = cells;
-        // TODO: 01.03.2020 make it based on cellsStates
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
+        // TODO: 01.03.2020 make this loop based on cellsStates
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 if (cellsStates[i][j]) {
-                    grid.getChildren().get(10 * i + j).setStyle("-fx-background-color: #333333");
+                    grid.getChildren().get(rows * i + j).setStyle("-fx-background-color: #333333");
                 } else {
-                    grid.getChildren().get(10 * i + j).setStyle("-fx-background-color: #ffffff");
+                    grid.getChildren().get(rows * i + j).setStyle("-fx-background-color: #ffffff");
                 }
             }
         }
