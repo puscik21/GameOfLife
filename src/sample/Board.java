@@ -76,20 +76,28 @@ public class Board {
     }
 
     private void fillCellFromSingleNumber(boolean[][] cells, int cellNumber) {
-        int row = cellNumber / rows;
-        int col = cellNumber % rows;
+        int row = cellNumber / cols;
+        int col = cellNumber % cols;
         cells[row][col] = true;
+    }
+
+    public void clear() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                cellsStates[i][j] = false;
+            }
+        }
+        updateGrid(cellsStates);
     }
 
     public void updateGrid(boolean[][] cells) {
         cellsStates = cells;
-        // TODO: 01.03.2020 make this loop based on cellsStates
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (cellsStates[i][j]) {
-                    grid.getChildren().get(rows * i + j).setStyle("-fx-background-color: #333333");
+                    grid.getChildren().get(cols * i + j).setStyle("-fx-background-color: #333333");
                 } else {
-                    grid.getChildren().get(rows * i + j).setStyle("-fx-background-color: #ffffff");
+                    grid.getChildren().get(cols * i + j).setStyle("-fx-background-color: #ffffff");
                 }
             }
         }
@@ -105,10 +113,6 @@ public class Board {
             }
         }
         return computeStateFromSum(cellState, sum);
-    }
-
-    public GridPane getGrid() {
-        return grid;
     }
 
     private boolean getCurrentState(int row, int col) {
@@ -143,6 +147,10 @@ public class Board {
         } else {
             return cellState && sum == 2;
         }
+    }
+
+    public GridPane getGrid() {
+        return grid;
     }
 }
 
