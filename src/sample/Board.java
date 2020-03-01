@@ -5,24 +5,25 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class Board {
 
     private GridPane grid;
     private boolean[][] cellsStates;
+    private int rows;
+    private int cols;
 
     public Board(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
         cellsStates = new boolean[rows][cols];
         initBoard(rows, cols);
-        grid.setGridLinesVisible(true);
-        grid.setPadding(new Insets(0, 0, 0, 0));
-//        grid.getChildren().get(5).setStyle("-fx-background-color: #333333");
 
-        AnchorPane.setTopAnchor(grid, 0.0);
-        AnchorPane.setBottomAnchor(grid, 0.0);
-        AnchorPane.setLeftAnchor(grid, 0.0);
-        AnchorPane.setRightAnchor(grid, 0.0);
+        prepareGridLayout();
     }
 
     private void initBoard(int rows, int cols) {
@@ -43,6 +44,43 @@ public class Board {
         return cell;
     }
 
+    private void prepareGridLayout() {
+        grid.setGridLinesVisible(true);
+        grid.setPadding(new Insets(0, 0, 0, 0));
+
+        AnchorPane.setTopAnchor(grid, 0.0);
+        AnchorPane.setBottomAnchor(grid, 0.0);
+        AnchorPane.setLeftAnchor(grid, 0.0);
+        AnchorPane.setRightAnchor(grid, 0.0);
+    }
+
+    // TODO: 01.03.2020 refactor
+    public void fillGridWithRandomStates(int percentage) {
+        boolean[][] cells = new boolean[rows][cols];
+        int allCells = rows * cols;
+        Random randGenerator = new Random();
+        int cellsToFill = allCells * percentage / 100;
+
+        List<Integer> cellsNumbers = new LinkedList<>();
+        for (int i = 0; i < allCells; i++) {
+            cellsNumbers.add(i);
+        }
+
+        for (int i = 0; i < cellsToFill; i++) {
+            int numberIndex = randGenerator.nextInt(cellsNumbers.size());
+            int cellNumber = cellsNumbers.get(numberIndex);
+            cellsNumbers.remove(numberIndex);
+            fillCellFromSingleNumber(cells, cellNumber);
+        }
+        updateGrid(cells);
+    }
+
+    private void fillCellFromSingleNumber(boolean[][] cells, int cellNumber) {
+        int row = cellNumber / rows;
+        int col = cellNumber % rows;
+        cells[row][col] = true;
+    }
+
     public void updateGrid(boolean[][] cells) {
         cellsStates = cells;
         // TODO: 01.03.2020 make it based on cellsStates
@@ -57,10 +95,6 @@ public class Board {
         }
     }
 
-    public GridPane getGrid() {
-        return grid;
-    }
-
     public boolean computeCellState(int row, int col) {
         boolean cellState = getCurrentState(row, col);
         boolean[] neighboursStates = getNeighboursStates(row,  col);
@@ -71,6 +105,10 @@ public class Board {
             }
         }
         return computeStateFromSum(cellState, sum);
+    }
+
+    public GridPane getGrid() {
+        return grid;
     }
 
     private boolean getCurrentState(int row, int col) {
